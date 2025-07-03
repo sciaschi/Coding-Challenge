@@ -89,6 +89,16 @@ If you're reviewing this for a technical assignment or interview, please feel fr
 
 ---
 
+## 💡 Assistance Disclosure
+
+Some portions of this project were developed with the help of [ChatGPT](https://openai.com/chatgpt) for tasks such as:
+- Troubleshooting schema rendering issues with JSON Forms
+- Generating boilerplate React components
+- Clarifying logic for enum handling and data mapping
+- Writing this README for documentation clarity
+
+All code was reviewed, customized, and integrated by me to ensure it met the specific needs of the project.
+
 ## License
 
 MIT
