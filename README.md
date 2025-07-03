@@ -35,6 +35,9 @@ Coding-Challenge/
 - Node.js (v18+ recommended)
 - Yarn or npm
 
+### Youtube Video of Coding
+https://youtu.be/6ISHqUIjvnk
+
 ### Installation
 
 ```bash
