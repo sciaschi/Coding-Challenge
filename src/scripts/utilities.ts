@@ -1,13 +1,12 @@
 let utils = {
-    sanitizeSchema(schema: any, data: any = {}): any {
+    sanitizeSchema(schema: any, data: any = {}) {
         const clone = structuredClone(schema);
         const props = clone.properties ?? clone.field_schema?.properties;
-
         if (!props) return clone;
 
         const allowedTypes = [
-            "short-text", "multi-line-text", "checkbox-group", "multi-select",
-            "dropdown", "email", "phone", "number", "object-enum", "button"
+            "short-text","multi-line-text","checkbox-group","multi-select",
+            "dropdown","email","phone","number","object-enum","button"
         ];
 
         for (const key in props) {
@@ -15,49 +14,41 @@ let utils = {
             if (!prop) continue;
 
             const type = prop.avantos_type;
-
             if (!allowedTypes.includes(type)) {
                 delete props[key];
                 continue;
             }
 
             if (type === "object-enum") {
-                if (!Array.isArray(prop.enum)) {
-                    prop.enum = [];
-                }
+                if (!Array.isArray(prop.enum)) prop.enum = [];
 
-                const titles = prop.enum.map((item: any) => item?.title);
-                const hasNone = titles.includes("(None)");
+                const noneExists = prop.enum.some(
+                    (it: any) => it?.title === "(None)" && (it?.value === null || it?.value === "None")
+                );
+                if (!noneExists) prop.enum.unshift({ title: "(None)", value: null });
 
-                console.log(hasNone);
-
-                if (!hasNone) {
-                    prop.enum.unshift({ title: "(None)", value: null });
+                const cur = data[key];
+                if (cur && typeof cur === "object") {
+                    const already = prop.enum.some((it: any) => it?.title === cur.title);
+                    if (!already) prop.enum.push(cur);
                 }
 
                 prop.type = "object";
+                continue;
             }
 
-            if ('enum' in prop) {
-                if (!Array.isArray(prop.enum)) {
-                    prop.enum = [{title: "None", value: "None"}];
+            if ("enum" in prop) {
+                if (!Array.isArray(prop.enum) || prop.enum.length === 0) {
+                    delete props[key];      // remove empty enum fields (avoids runtime error)
+                    continue;
                 }
 
-                const currentValue = data?.[key];
-                if (currentValue && !prop.enum.includes(currentValue)) {
-                    prop.enum.push(currentValue);
-                }
-
+                /* turn object enums-for-dropdown into strings */
                 if (typeof prop.enum[0] === "object") {
                     prop.enum = prop.enum.map((item: any) =>
                         item?.title ?? item?.label ?? JSON.stringify(item)
                     );
                     prop.type = "string";
-                }
-
-                if (prop.enum.length === 0 && type !== 'object-enum') {
-                    delete props[key];
-                    continue;
                 }
             }
         }
