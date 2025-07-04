@@ -49,6 +49,7 @@ npm install
 ```bash
 npm next dev
 ```
+(you should have the mock server running on localhost too.) 
 
 Open your browser at [http://localhost:3000](http://localhost:3000).
 
